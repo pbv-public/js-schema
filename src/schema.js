@@ -846,6 +846,17 @@ class JSONSchemaExporter {
  * deleting the corresponding accessor.
  */
 class S {
+  static desc (description) {
+    return new Proxy(S, {
+      get: (target, key) => {
+        if (typeof target[key] === 'function') {
+          return (...args) => target[key](...args).desc(description)
+        }
+        return target[key].desc(description)
+      }
+    })
+  }
+
   /**
    * @param {Object} object See {@link ObjectSchema#constructor}
    * @return A new ObjectSchema object.

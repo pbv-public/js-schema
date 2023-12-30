@@ -480,6 +480,36 @@ class NewFeatureTest extends BaseTest {
       .verify()
   }
 
+  testWithDescriptionFirst () {
+    function check (f) {
+      const sampleDesc = 'some desc'
+      const descFirst = f(S.desc(sampleDesc))
+      const descLast = f(S).desc(sampleDesc)
+      expect(descFirst.jsonSchema()).toEqual(descLast.jsonSchema())
+    }
+
+    check(TestS => TestS.int)
+    check(TestS => TestS.str.min(1))
+    check(TestS => TestS.obj({ x: S.int }))
+    check(TestS => TestS.obj({ x: S.int.desc('hi') }))
+    check(TestS => TestS.obj({ x: S.desc('hi').int }))
+    check(TestS => TestS.arr(S.int))
+
+    // exDescFirst start
+    const descFirstSchema = S.desc('description can come first').obj({
+      x: S.int,
+      // long list of properties...
+      z: S.str
+    })
+    // exDescFirst end
+    const descLastSchema = S.obj({
+      x: S.int,
+      // long list of properties...
+      z: S.str
+    }).desc('description can come first')
+    expect(descFirstSchema.jsonSchema()).toEqual(descLastSchema.jsonSchema())
+  }
+
   testObjectAdditionalPropsOkay () {
     // empty object => additional properties allowed
     expect(S.obj().jsonSchema().additionalProperties).toBe(true)
