@@ -1,5 +1,6 @@
 import assert from 'assert' // only defined if needed
 
+import Ajv from 'ajv/dist/2020'
 import deepcopy from 'rfdc/default'
 
 let ajv
@@ -285,7 +286,7 @@ class BaseSchema {
     assert.ok(name, 'name is required')
     if (!compiler) {
       if (!ajv) {
-        ajv = new (require('ajv/dist/2020'))({
+        ajv = new Ajv({
           allErrors: true,
           useDefaults: true,
           strictSchema: false

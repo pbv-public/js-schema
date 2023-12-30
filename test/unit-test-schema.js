@@ -350,7 +350,7 @@ class TypedNumberTest extends BaseTest {
    * for ajv compiler
    */
   testFloatExplicitCompiler () {
-    const ajv = new (require('ajv/dist/2020'))({ allErrors: true, useDefaults: true })
+    const ajv = new Ajv({ allErrors: true, useDefaults: true })
     const obj = S.obj({
       float: S.double.asFloat()
     })
