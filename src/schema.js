@@ -107,6 +107,7 @@ class BaseSchema {
    *   is allowed.
    */
   __setProp (name, val, { allowOverride = false } = {}) {
+    assert.ok(name, 'name should be set')
     assert.ok(!this.__isLocked || allowOverride,
       'Schema is locked. Call copy then further modify the schema')
     assert.ok(allowOverride ||
@@ -149,7 +150,7 @@ class BaseSchema {
    */
   id (id) {
     assert.ok(typeof id === 'string', '$id must be a string.')
-    return this.__setProp('$id', id)
+    return this.__setProp('$id', id, { allowOverride: true })
   }
 
   /**
@@ -296,6 +297,7 @@ class BaseSchema {
     const validate = compiler.compile(jsonSchema)
     const assertValid = v => {
       if (!validate(v)) {
+        console.log(name, v, validate.errors, jsonSchema)
         throw new ValidationError(name, v, validate.errors, jsonSchema)
       }
     }
@@ -742,6 +744,37 @@ class RefSchema extends BaseSchema {
 }
 
 /**
+ * For making const values.
+ */
+class ConstSchema extends BaseSchema {
+  constructor (constValue) {
+    super()
+    this.__setProp('const', constValue)
+  }
+
+  export (visitor) {
+    return visitor.exportConst(this)
+  }
+}
+
+/**
+ * Represents an enum containing arbitrary types.
+ */
+class EnumSchema extends BaseSchema {
+  constructor (validValues) {
+    super()
+    const values = Array.isArray(validValues) ? validValues : [...arguments]
+    console.log('values=', values)
+    assert(values.length >= 1, 'Enum must contain at least 1 value.')
+    this.__setProp('enum', values)
+  }
+
+  export (visitor) {
+    return visitor.exportEnum(this)
+  }
+}
+
+/**
  * The MapSchema class.
  */
 class MapSchema extends ObjectSchema {
@@ -843,6 +876,8 @@ class JSONSchemaExporter {
       'exportObject',
       'exportArray',
       'exportBoolean',
+      'exportConst',
+      'exportEnum',
       'exportMap',
       'exportMedia',
       'exportRef'
@@ -949,6 +984,16 @@ class S {
    * Get a new RefSchema object.
    */
   static ref (idBeingReferenced) { return new RefSchema(idBeingReferenced) }
+
+  /**
+   * Get a new num.
+   */
+  static enum (...allowedValues) { return new EnumSchema(...allowedValues) }
+
+  /**
+   * Get a new const schema.
+   */
+  static const (constValue) { return new ConstSchema(constValue) }
 
   /**
    * Get a new MapSchema object.

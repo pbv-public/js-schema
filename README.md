@@ -59,6 +59,9 @@ S.double               // replace S.number()
 S.int                  // replace S.integer()
 S.bool                 // replace S.boolean()
 S.ref                  // replace S.ref()
+S.enum([1, 'x'])       // replace S.enum; for non-string and heterogenous enums
+S.const(5)             // replace S.const
+
 
 // Common API for all schema objects
 S.str // Or any other schema object

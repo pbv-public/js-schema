@@ -34,6 +34,7 @@ class ProxySchema {
       integer: 'int',
       number: 'double',
       boolean: 'bool',
+      const: 'const',
       media: 'media',
       ref: 'ref'
     }
@@ -48,7 +49,7 @@ class ProxySchema {
           tempA = tempA.additionalProperties(false)
         }
         let tempB = this.s[right]
-        if (['object', 'array', 'ref'].includes(left)) {
+        if (['object', 'array', 'ref', 'const'].includes(left)) {
           tempB = tempB()
         }
         return new ProxySchema(
@@ -884,6 +885,57 @@ into **one** string`)
       }
     })
     expect(numCalls).toBe(1)
+  }
+
+  testEnumSchema () {
+    const enumSchema = S.enum([3, 'x', false, null])
+    const schema = S.obj({ x: enumSchema })
+    expect(schema.jsonSchema().properties.x).toEqual({
+      enum: [3, 'x', false, null]
+    })
+    let numCalls = 0
+    enumSchema.export({
+      exportEnum: x => {
+        expect(x).toBe(enumSchema)
+        numCalls += 1
+      }
+    })
+    expect(numCalls).toBe(1)
+
+    // can just pass values too
+    const enumSchema2 = S.enum(3, 'x', false, null)
+    for (const toTry of [enumSchema, enumSchema2]) {
+      console.log('in toTry*******')
+      const validate = toTry.compile('enumSchema')
+      validate(3)
+      validate('x')
+      validate(null)
+      validate(false)
+      expect(() => validate()).toThrow(S.ValidationError)
+      expect(() => validate('3')).toThrow(S.ValidationError)
+      expect(() => validate(true)).toThrow(S.ValidationError)
+      expect(() => validate('xx')).toThrow(S.ValidationError)
+    }
+  }
+
+  testConstSchema () {
+    const constSchema = S.const(5)
+    const schema = S.obj({ x: constSchema })
+    expect(schema.jsonSchema().properties.x).toEqual({ const: 5 })
+    let numCalls = 0
+    constSchema.export({
+      exportConst: x => {
+        expect(x).toBe(constSchema)
+        numCalls += 1
+      }
+    })
+    expect(numCalls).toBe(1)
+
+    const validate = constSchema.compile('constSchema')
+    validate(5)
+    expect(() => validate('5')).toThrow(S.ValidationError)
+    expect(() => validate()).toThrow(S.ValidationError)
+    expect(() => validate(5.1)).toThrow(S.ValidationError)
   }
 }
 
