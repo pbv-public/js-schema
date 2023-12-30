@@ -1,6 +1,6 @@
 const assert = require('assert')
 
-const { BaseTest, runTests } = require('@pocketgems/unit-test')
+const { BaseTest, runTests } = require('@pbvision/jest-unit-test')
 const ajv = new (require('ajv'))({ allErrors: true })
 const FS = require('fluent-schema')
 

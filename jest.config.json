@@ -19,11 +19,10 @@
       "<rootDir>/test/*(*/)unit-test*.js"
     ],
     "reporters": [
-      "@pocketgems/unit-test/src/custom-reporter.js",
-      "@pocketgems/unit-test/src/summary-reporter.js"
+      "@pbvision/jest-unit-test/src/custom-reporter.js",
+      "@pbvision/jest-unit-test/src/summary-reporter.js"
     ],
     "watchPathIgnorePatterns": ["node_modules"],
     "verbose": false,
     "noStackTrace": false
   }
-  
