@@ -12,7 +12,7 @@ and [fluent-schema API](https://github.com/fastify/fluent-schema) and will only
 discuss features unique to this library. Please familiarize yourself with the
 linked docs before continuing.
 
-[![JSDoc](https://img.shields.io/badge/Documentation-JSDoc-green.svg?logo=githubpages)](https://pocketgems.github.io/schema)
+[![JSDoc](https://img.shields.io/badge/Documentation-JSDoc-green.svg?logo=githubpages)](https://pbv-public.github.io/js-schema)
 
 - [Convenient](#convenient)
   - [Shorthand Syntax](#shorthand-syntax)
@@ -31,7 +31,7 @@ linked docs before continuing.
   - [Deprecated JSON Schema Features](#deprecated-json-schema-features)
   - [Required By Default](#required-by-default)
   - [Set Once Only](#set-once-only)
-  - [Lock & Copy](#lock--copy)
+  - [Lock \& Copy](#lock--copy)
   - [Explicit Keys](#explicit-keys)
 - [Efficient](#efficient)
   - [In-Place Mutation](#in-place-mutation)
