@@ -83,7 +83,9 @@ class BaseSchema {
      */
     this.__isLocked = false
     this.__isOptional = false
-    this.__setProp('type', this.constructor.JSON_SCHEMA_TYPE)
+    if (this.constructor.JSON_SCHEMA_TYPE) {
+      this.__setProp('type', this.constructor.JSON_SCHEMA_TYPE)
+    }
   }
 
   /**
@@ -139,6 +141,15 @@ class BaseSchema {
       this.__setProp(name, defaultValue)
     }
     return this.getProp(name)
+  }
+
+  /**
+   * Sets $id.
+   * @param {String} id The id of the schema.
+   */
+  id (id) {
+    assert.ok(typeof id === 'string', '$id must be a string.')
+    return this.__setProp('$id', id)
   }
 
   /**
@@ -717,6 +728,20 @@ class BooleanSchema extends BaseSchema {
 }
 
 /**
+ * For making $ref references to other schema's $id
+ */
+class RefSchema extends BaseSchema {
+  constructor (ref) {
+    super()
+    this.__setProp('$ref', ref)
+  }
+
+  export (visitor) {
+    return visitor.exportRef(this)
+  }
+}
+
+/**
  * The MapSchema class.
  */
 class MapSchema extends ObjectSchema {
@@ -819,7 +844,8 @@ class JSONSchemaExporter {
       'exportArray',
       'exportBoolean',
       'exportMap',
-      'exportMedia'
+      'exportMedia',
+      'exportRef'
     ]
 
     for (const method of methods) {
@@ -852,7 +878,7 @@ function makeProxyForS (methodName, value) {
   const proxy = new Proxy(S, {
     get: (target, key) => {
       // avoid recursively making proxies
-      const proxiedMethods = ['title', 'desc']
+      const proxiedMethods = ['id', 'desc', 'title']
       if (proxiedMethods.includes(key)) {
         return arg => {
           pendingChanges[key] = arg
@@ -876,7 +902,7 @@ function makeProxyForS (methodName, value) {
  */
 class S {
   static desc (description) { return makeProxyForS('desc', description) }
-
+  static id (id) { return makeProxyForS('id', id) }
   static title (title) { return makeProxyForS('title', title) }
 
   /**
@@ -918,6 +944,11 @@ class S {
    * Get a new BooleanSchema object.
    */
   static get bool () { return new BooleanSchema() }
+
+  /**
+   * Get a new RefSchema object.
+   */
+  static ref (idBeingReferenced) { return new RefSchema(idBeingReferenced) }
 
   /**
    * Get a new MapSchema object.

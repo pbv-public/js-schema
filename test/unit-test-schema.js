@@ -34,7 +34,8 @@ class ProxySchema {
       integer: 'int',
       number: 'double',
       boolean: 'bool',
-      media: 'media'
+      media: 'media',
+      ref: 'ref'
     }
     for (const [left, right] of Object.entries(classMapping)) {
       this[left] = (...args) => {
@@ -47,7 +48,7 @@ class ProxySchema {
           tempA = tempA.additionalProperties(false)
         }
         let tempB = this.s[right]
-        if (['object', 'array'].includes(left)) {
+        if (['object', 'array', 'ref'].includes(left)) {
           tempB = tempB()
         }
         return new ProxySchema(
@@ -850,6 +851,39 @@ into **one** string`)
       'suffix-okay-xyz': 'suffix',
       xyz: 'only this'
     })
+  }
+
+  testId () {
+    const first = S.id('/some/id').obj({ x: S.int })
+    const last = S.obj({ x: S.int }).id('/some/id')
+    const schema = first.jsonSchema()
+    expect(schema).toEqual(last.jsonSchema())
+    delete schema.$schema
+    expect(schema).toEqual({
+      $id: '/some/id',
+      type: 'object',
+      properties: {
+        x: {
+          type: 'integer'
+        }
+      },
+      required: ['x'],
+      additionalProperties: false
+    })
+  }
+
+  testRefSchema () {
+    const ref = S.ref('/some/id')
+    const schema = S.obj({ x: ref })
+    expect(schema.jsonSchema().properties.x).toEqual({ $ref: '/some/id' })
+    let numCalls = 0
+    ref.export({
+      exportRef: x => {
+        expect(x).toBe(ref)
+        numCalls += 1
+      }
+    })
+    expect(numCalls).toBe(1)
   }
 }
 

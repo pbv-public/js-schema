@@ -58,9 +58,11 @@ S.str                  // replace S.string()
 S.double               // replace S.number()
 S.int                  // replace S.integer()
 S.bool                 // replace S.boolean()
+S.ref                  // replace S.ref()
 
 // Common API for all schema objects
 S.str // Or any other schema object
+  .title('some title')
   .desc('A more details description') // replace description()
 
 // min / max are polymorphic
@@ -69,6 +71,9 @@ S.arr().max(1).min(1)   // replace maxItems() & minItems()
 S.str.max(3).min(2)     // replace maxLength() & minLength()
 S.double.max(0.5).min(0.2) // replace maximum() & minimum()
 S.int.max(2).min(1)     // replace maximum() & minimum()
+
+// set the ID of a schema to be referenced
+S.obj().id('/some/id')
 ```
 
 Multiple calls to `prop()` can be simplified to one single call on `props()`.
