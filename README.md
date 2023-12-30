@@ -43,7 +43,7 @@ linked docs before continuing.
 # Convenient
 To start using the schema library, import the module first
 ```javascript
-const S = require('@pbvision/schema')
+import S from '@pbvision/schema'
 ```
 
 ## Shorthand Syntax

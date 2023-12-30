@@ -1,10 +1,12 @@
-const assert = require('assert')
+import assert from 'assert'
 
-const { BaseTest, runTests } = require('@pbvision/jest-unit-test')
-const ajv = new (require('ajv/dist/2020'))({ allErrors: true })
-const FS = require('fluent-schema')
+import { BaseTest, runTests } from '@pbvision/jest-unit-test'
+import Ajv from 'ajv/dist/2020'
+import FS from 'fluent-schema'
 
-const S = require('../src/schema')
+import S from '../src/schema.js'
+
+const ajv = new Ajv({ allErrors: true })
 
 class ProxySchema {
   constructor (fs, s) {

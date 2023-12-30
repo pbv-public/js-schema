@@ -1,16 +1,19 @@
 {
   "name": "@pbvision/schema",
   "version": "0.2.6",
-  "main": "src/schema.js",
   "license": "Apache-2.0",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": "./src/schema.js",
   "scripts": {
     "build-doc": "./docs/build.sh",
     "check-markdown-link": "./scripts/ci/markdown-link.sh",
     "debug": "./node_modules/nodemon/bin/nodemon.js --no-lazy --legacy-watch --watch ./src --watch ./example --watch ./test --inspect=9229 ./node_modules/jest/bin/jest.js --coverage --config=./jest.config.json --runInBand",
     "lint": "./scripts/ci/lint-format-js.sh",
     "setup": "yarn install --frozen-lockfile && pip install -r requirements.txt",
-    "test": "./scripts/ci/coverage.sh",
-    "webpack": "yarn; webpack --config webpack.config.js"
+    "test": "./scripts/ci/coverage.sh"
   },
   "contributors": [
     "Yu Guan",
@@ -25,9 +28,6 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org"
   },
-  "files": [
-    "src/schema.js"
-  ],
   "dependencies": {
     "ajv": "^8.11.2",
     "rfdc": "^1.1.4"
@@ -48,15 +48,13 @@
     "fluent-schema": "https://github.com/dound/fluent-schema/tarball/683c87a7ad106586c553fd34a6e5b445876e0582",
     "jest": "^29",
     "jsdoc": "3.6.4",
-    "license-webpack-plugin": "^2.3.17",
     "nodemon": "^2.0.20",
     "remark-cli": "^9.0.0",
     "remark-validate-links": "^10.0.2",
     "snazzy": "^8.0.0",
     "standard": "^15.0.0",
     "tui-jsdoc-template": "^1.2.2",
-    "webpack": "^5.13.0",
-    "webpack-cli": "^4.3.1"
+    "webpack": "^5.13.0"
   },
   "standard": {
     "envs": [

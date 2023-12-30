@@ -1,7 +1,8 @@
-const assert = require('assert')
+import assert from 'assert' // only defined if needed
 
-let ajv // only defined if needed
-const deepcopy = require('rfdc')() // cspell:disable-line
+import deepcopy from 'rfdc/default'
+
+let ajv
 
 /**
  * Thrown if a compiled schema validator is asked to validate an invalid value.
@@ -19,7 +20,7 @@ class ValidationError extends Error {
     this.validationErrors = errors
     this.expectedSchema = expectedSchema
     // istanbul ignore next
-    if (['localhost', 'webpack'].includes(process.env.NODE_ENV)) {
+    if (['localhost'].includes(process.env.NODE_ENV)) {
       console.error(JSON.stringify(errors, null, 2))
     }
   }
@@ -934,7 +935,7 @@ function makeProxyForS (methodName, value) {
  * Noteworthily, it is safe to deprecate certain schema types simply by
  * deleting the corresponding accessor.
  */
-class S {
+export default class S {
   static desc (description) { return makeProxyForS('desc', description) }
   static id (id) { return makeProxyForS('id', id) }
   static title (title) { return makeProxyForS('title', title) }
@@ -1080,5 +1081,3 @@ function getAnchoredPattern (pattern) {
   }
   return anchoredName
 }
-
-module.exports = S
