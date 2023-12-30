@@ -283,7 +283,10 @@ class BaseSchema {
    * @returns {Function} call on a value to validate it; throws on error
    */
   compile (name, compiler, returnSchemaToo) {
-    assert.ok(name, 'name is required')
+    if (!name) {
+      name = this.getProp('$id')
+      assert.ok(name, 'name is required')
+    }
     if (!compiler) {
       if (!ajv) {
         ajv = new Ajv({

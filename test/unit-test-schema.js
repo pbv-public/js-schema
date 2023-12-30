@@ -1119,5 +1119,27 @@ class PolymorphicObjectTest extends BaseTest {
   }
 }
 
+class ValidatorNameTest extends BaseTest {
+  checkValidatorName (schema, expectedName, compileWithCustomName) {
+    const validate = schema.compile(compileWithCustomName)
+    expect(() => validate('nope').toThrow(`Validation Error: ${expectedName}`))
+  }
+
+  testCannotCompileWithoutName () {
+    expect(() => S.int.compile()).toThrow('name is required')
+  }
+
+  testCustomNameForCompile () {
+    this.checkValidatorName(S.int, 'custom name', 'custom name')
+
+    // custom name overrides $id
+    this.checkValidatorName(S.id('/some/id').int, 'custom!', 'custom!')
+  }
+
+  test$IdAsNameForCompile () {
+    this.checkValidatorName(S.id('/an/id').int, '/some/id')
+  }
+}
+
 runTests(FeatureParityTest, TypedNumberTest, ValidationTest, NewFeatureTest,
-  PolymorphicObjectTest)
+  PolymorphicObjectTest, ValidatorNameTest)
