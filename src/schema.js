@@ -1,6 +1,6 @@
 import assert from 'assert' // only defined if needed
 
-import Ajv from 'ajv/dist/2020'
+import Ajv from 'ajv/dist/2020.js'
 import deepcopy from 'rfdc/default'
 
 let ajv

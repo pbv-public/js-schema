@@ -1,7 +1,7 @@
 import assert from 'assert'
 
 import { BaseTest, runTests } from '@pbvision/jest-unit-test'
-import Ajv from 'ajv/dist/2020'
+import Ajv from 'ajv/dist/2020.js'
 import FS from 'fluent-schema'
 
 import S from '../src/schema.js'
