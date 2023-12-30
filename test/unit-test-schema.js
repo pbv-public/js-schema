@@ -510,6 +510,43 @@ class NewFeatureTest extends BaseTest {
     expect(descFirstSchema.jsonSchema()).toEqual(descLastSchema.jsonSchema())
   }
 
+  testWithTitleFirst () {
+    function check (f) {
+      const sampleTitle = 'some title'
+      const descFirst = f(S.title(sampleTitle))
+      const descLast = f(S).title(sampleTitle)
+      expect(descFirst.jsonSchema()).toEqual(descLast.jsonSchema())
+    }
+
+    check(TestS => TestS.int)
+    check(TestS => TestS.str.min(1))
+    check(TestS => TestS.obj({ x: S.int }))
+    check(TestS => TestS.obj({ x: S.int.desc('hi') }))
+    check(TestS => TestS.obj({ x: S.desc('hi').int }))
+    check(TestS => TestS.arr(S.int))
+  }
+
+  testWithTitleAndDescFirstOrLast () {
+    function check (f) {
+      const sampleTitle = 'some title'
+      const sampleDesc = 'some desc'
+      const titleDescFirst = f(S.title(sampleTitle).desc(sampleDesc))
+      const descTitleFirst = f(S.desc(sampleDesc).title(sampleTitle))
+      const titleDescLast = f(S).title(sampleTitle).desc(sampleDesc)
+      const descTitleLast = f(S).desc(sampleDesc).title(sampleTitle)
+      expect(titleDescFirst.jsonSchema()).toEqual(descTitleFirst.jsonSchema())
+      expect(titleDescFirst.jsonSchema()).toEqual(titleDescLast.jsonSchema())
+      expect(titleDescFirst.jsonSchema()).toEqual(descTitleLast.jsonSchema())
+    }
+
+    check(TestS => TestS.int)
+    check(TestS => TestS.str.min(1))
+    check(TestS => TestS.obj({ x: S.int }))
+    check(TestS => TestS.obj({ x: S.int.desc('hi') }))
+    check(TestS => TestS.obj({ x: S.desc('hi').int }))
+    check(TestS => TestS.arr(S.int))
+  }
+
   testObjectAdditionalPropsOkay () {
     // empty object => additional properties allowed
     expect(S.obj().jsonSchema().additionalProperties).toBe(true)

@@ -18,7 +18,7 @@ linked docs before continuing.
   - [Shorthand Syntax](#shorthand-syntax)
   - [Pattern Properties](#pattern-properties)
   - [Long Descriptions](#long-descriptions)
-- [Description Before Type](#description-before-type)
+- [Title \& Description can go Before Type](#title--description-can-go-before-type)
   - [Long Examples](#long-examples)
   - [Map Schema](#map-schema)
   - [Media Schema](#media-schema)
@@ -132,9 +132,8 @@ into **one** string`)
   }
 ```
 
-# Description Before Type
-You can put the description before the type too. This is useful when defining
-a long object:
+# Title & Description can go Before Type
+You can put the title and description before the type too. This is useful when defining a long object:
 ```javascript <!-- embed:test/unit-test-schema.js:section:exDescFirst start:exDescFirst end -->
     const descFirstSchema = S.desc('description can come first').obj({
       x: S.int,

@@ -840,22 +840,44 @@ class JSONSchemaExporter {
   }
 }
 
+function makeProxyForS (methodName, value) {
+  const pendingChanges = { [methodName]: value }
+  function applyPendingChanges (schema) {
+    for (const [k, v] of Object.entries(pendingChanges)) {
+      schema[k](v)
+    }
+    return schema
+  }
+
+  const proxy = new Proxy(S, {
+    get: (target, key) => {
+      // avoid recursively making proxies
+      const proxiedMethods = ['title', 'desc']
+      if (proxiedMethods.includes(key)) {
+        return arg => {
+          pendingChanges[key] = arg
+          return proxy
+        }
+      }
+
+      if (typeof target[key] === 'function') {
+        return (...args) => applyPendingChanges(target[key](...args))
+      }
+      return applyPendingChanges(target[key][methodName](value))
+    }
+  })
+  return proxy
+}
+
 /**
  * The S object to be exported.
  * Noteworthily, it is safe to deprecate certain schema types simply by
  * deleting the corresponding accessor.
  */
 class S {
-  static desc (description) {
-    return new Proxy(S, {
-      get: (target, key) => {
-        if (typeof target[key] === 'function') {
-          return (...args) => target[key](...args).desc(description)
-        }
-        return target[key].desc(description)
-      }
-    })
-  }
+  static desc (description) { return makeProxyForS('desc', description) }
+
+  static title (title) { return makeProxyForS('title', title) }
 
   /**
    * @param {Object} object See {@link ObjectSchema#constructor}
