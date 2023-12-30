@@ -121,7 +121,7 @@ class FeatureParityTest extends BaseTest {
     // Fluent schema constantly makes copies of objects to allow diverging
     // schemas. Coping and allocating new object is slow, so we don't do it for
     // every chained method call -- only when a property is overwritten by
-    // another value. In addition, Todea's schema can be locked to prevent
+    // another value. In addition, schemas can be locked to prevent
     // further modification, then to further modify the schema users need to
     // explicitly unlock-by-copying.
     const str = P.string()

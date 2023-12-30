@@ -63,9 +63,9 @@ class BaseSchema {
    */
   constructor () {
     /**
-     * Flag to indicate whether an object is a Todea Schema object.
+     * Flag to indicate whether an object is a Schema object.
      */
-    this.isTodeaSchema = true
+    this.isSchema = true
 
     /**
      * For compatibility with fluent-schema. Indicates if an object is a
@@ -87,7 +87,7 @@ class BaseSchema {
   }
 
   /**
-   * Locks a Todea Schema object from modifications.
+   * Locks a Schema object from modifications.
    */
   lock () {
     this.__isLocked = true
@@ -303,7 +303,7 @@ class BaseSchema {
   }
 
   /**
-   * @return A copy of the Todea Schema object. Locked objects become unlocked.
+   * @return A copy of the Schema object. Locked objects become unlocked.
    *
    */
   copy () {
