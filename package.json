@@ -1,6 +1,6 @@
 {
   "name": "@pbvision/schema",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "main": "src/schema.js",
   "license": "Apache-2.0",
   "scripts": {
