@@ -297,7 +297,6 @@ class BaseSchema {
     const validate = compiler.compile(jsonSchema)
     const assertValid = v => {
       if (!validate(v)) {
-        console.log(name, v, validate.errors, jsonSchema)
         throw new ValidationError(name, v, validate.errors, jsonSchema)
       }
     }
