@@ -54,7 +54,8 @@
     "snazzy": "^8.0.0",
     "standard": "^15.0.0",
     "tui-jsdoc-template": "^1.2.2",
-    "webpack": "^5.13.0"
+    "webpack": "^5.13.0",
+    "yargs": "^17.7.2"
   },
   "standard": {
     "envs": [
