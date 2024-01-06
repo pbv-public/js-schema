@@ -170,13 +170,11 @@ class BaseSchema {
 
   /**
    * Sets a description.
-   * @param {String|Array<String>} t The description of the schema. If an array
-   *   of strings are passed in, they will be joined by a space to form the
-   *   description.
+   * @param {String|Array<String>} d The description of the schema.
+   * @param {formatParagraphOptions} options how to format `d`
    */
-  desc (d) {
-    assert.ok(typeof d === 'string', 'Description must be a string.')
-    d = d.trim().replace(/\n/g, ' ')
+  desc (d, options) {
+    d = formatParagraph(d, options)
     return this.__setProp('description', d, { allowOverride: true })
   }
 
@@ -235,14 +233,12 @@ class BaseSchema {
   /**
    * Updates schemas examples.
    * @param {Array<String|Array<String>>} es A list of examples. Each example
-   *   may be a string, or a list of strings. In case of a list of strings, the
-   *   strings will be joined by a space character and used as one example.
+   *   may be a string, or a list of strings.
+   * @param {formatParagraphOptions} options how to format each example in `es`
    */
-  examples (es) {
+  examples (es, options) {
     assert.ok(Array.isArray(es), 'Examples must be an array')
-    es = es.map(e => {
-      return Array.isArray(e) ? e.join(' ') : e
-    })
+    es = es.map(e => formatParagraph(e, options))
     return this.__setProp('examples', es, { allowOverride: true })
   }
 
@@ -947,6 +943,40 @@ class JSONSchemaExporter {
     ret.$schema = 'https://json-schema.org/draft/2020-12/schema'
     return ret
   }
+}
+
+/**
+ * Options to format a paragraph
+ *
+ * @typedef {Object} formatParagraphOptions
+ * @property {String|false} replaceNewlines if not false, then newlines
+ *   will be replaced with this character
+ * @property {boolean} trim whether to trim whitespace from the start/end (for
+ *   arrays, each element will be trimmed too)
+ * @public
+ */
+/**
+ * Formats a paragraph into a string.
+ *
+ * @param {String|Array<String>} p the string or array of strings to process
+ * @param {formatParagraphOptions} options how to format the string
+ * @returns {String} formatted string
+ */
+function formatParagraph (p, { replaceNewlines = ' ', trim = true } = {}) {
+  if (!Array.isArray(p)) {
+    p = [p]
+  }
+  if (trim && replaceNewlines !== false) {
+    p = p.map(x => x.trim())
+  }
+  let s = p.join('\n')
+  if (replaceNewlines !== false) {
+    s = s.replace(/\n/g, replaceNewlines)
+  }
+  if (trim) {
+    s = s.trim()
+  }
+  return s
 }
 
 function makeProxyForS (methodName, value) {

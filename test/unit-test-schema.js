@@ -784,6 +784,25 @@ into **one** string`)
       .toBe('this will get combined into **one** string')
   }
 
+  testNewlinesInDesc () {
+    const intWithDescription = S.int.desc(`\
+1. this will
+2. be
+3. three lines long`, { replaceNewlines: false, trim: false })
+    expect(intWithDescription.jsonSchema().description)
+      .toBe('1. this will\n2. be\n3. three lines long')
+  }
+
+  testNewlinesInDescWithTrim () {
+    const intWithDescription = S.int.desc(`
+1. this will
+2. be
+3. three lines long
+`, { replaceNewlines: false, trim: true })
+    expect(intWithDescription.jsonSchema().description)
+      .toBe('1. this will\n2. be\n3. three lines long')
+  }
+
   testLongExamples () {
     const intWithExamples = S.int
       .examples([

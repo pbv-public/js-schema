@@ -17,9 +17,9 @@ linked docs before continuing.
 - [Convenient](#convenient)
   - [Shorthand Syntax](#shorthand-syntax)
   - [Pattern Properties](#pattern-properties)
-  - [Long Descriptions](#long-descriptions)
+  - [Long Descriptions and Examples](#long-descriptions-and-examples)
 - [Title \& Description can go Before Type](#title--description-can-go-before-type)
-  - [Long Examples](#long-examples)
+  - [Examples](#examples)
   - [Map Schema](#map-schema)
   - [Media Schema](#media-schema)
   - [Enumeration](#enumeration)
@@ -125,7 +125,7 @@ Patterns have start and end anchors (`^` and `$`) automatically added to only
 allow properties which exactly match the regex. To find a substring (or prefix
 or suffix) you can use start and/or end your pattern with the `.*` pattern.
 
-## Long Descriptions
+## Long Descriptions and Examples
 Long descriptions can should use multiline Node strings. These strings will be
 joined by a space character to form the final description. Keep in mind that
 Markdown is supported in descriptions rendered to Swagger.
@@ -140,6 +140,18 @@ into **one** string`)
   }
 ```
 
+You can also control how the string is formatted, e.g., preserve newlines:
+```javascript <!-- embed:test/unit-test-schema.js:scope:testNewlinesInDesc -->
+  testNewlinesInDesc () {
+    const intWithDescription = S.int.desc(`\
+1. this will
+2. be
+3. three lines long`, { replaceNewlines: false, trim: false })
+    expect(intWithDescription.jsonSchema().description)
+      .toBe('1. this will\n2. be\n3. three lines long')
+  }
+```
+
 # Title & Description can go Before Type
 You can put the title and description before the type too. This is useful when defining a long object:
 ```javascript <!-- embed:test/unit-test-schema.js:section:exDescFirst start:exDescFirst end -->
@@ -150,10 +162,10 @@ You can put the title and description before the type too. This is useful when d
     })
 ```
 
-## Long Examples
+## Examples
 Examples can be provided via the `examples()` API. It takes an array of
-examples. For a long example, an array of strings can be provided and they will
-be joined by a space character.
+examples. Each example processed like desc (i.e., you can provide formatting
+options).
 ```javascript <!-- embed:test/unit-test-schema.js:scope:testLongExamples -->
   testLongExamples () {
     const intWithExamples = S.int
