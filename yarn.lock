@@ -1264,7 +1264,7 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@pbvision/jest-unit-test@^0.2.0":
+"@pbvision/jest-unit-test@^0.2.1":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@pbvision/jest-unit-test/-/jest-unit-test-0.2.3.tgz#df981f26cfb9a579075a7f9cbe362de9c44b2fdb"
   integrity sha512-oOeDpd6OPeK6YSTBcpewnEh0hJwRJwAiiddIBX3YC5nUH2z5svEbiwEXvJq9VZ21Dex+DlBULLzRh1e2eAN93w==

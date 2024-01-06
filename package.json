@@ -37,7 +37,7 @@
     "@babel/eslint-parser": "^7.17.0",
     "@babel/plugin-transform-class-properties": "^7.12.1",
     "@babel/preset-env": "^7.17.12",
-    "@pbvision/jest-unit-test": "^0.2.0",
+    "@pbvision/jest-unit-test": "^0.2.1",
     "babel-loader": "^8.2.2",
     "eslint": "^8.22.0",
     "eslint-config-standard": "15.0.0",
