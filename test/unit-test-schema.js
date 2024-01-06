@@ -889,7 +889,6 @@ into **one** string`)
         x: { $ref: '/test' }
       }
     })
-    schemaToNest.compile() // dependency must be compiled first
     const validate = schema.compile()
     expect(validate({ x: 3 }))
     expect(() => validate({ x: '3' })).toThrow(S.ValidationError)
