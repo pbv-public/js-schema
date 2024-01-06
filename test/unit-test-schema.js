@@ -876,17 +876,17 @@ into **one** string`)
   }
 
   testNestedId () {
-    const schemaToNest = S.id('/test').int
-    const schema = S.id('/main').obj({ x: schemaToNest })
+    const schemaToNest = S.id('/testNestedId/toNest').int
+    const schema = S.id('/testNestedId/root').obj({ x: schemaToNest })
     const jsonSchema = schema.jsonSchema()
     delete jsonSchema.$schema
     expect(jsonSchema).toEqual({
-      $id: '/main',
+      $id: '/testNestedId/root',
       type: 'object',
       additionalProperties: false,
       required: ['x'],
       properties: {
-        x: { $ref: '/test' }
+        x: { $ref: '/testNestedId/toNest' }
       }
     })
     const validate = schema.compile()
@@ -898,18 +898,28 @@ into **one** string`)
   }
 
   testDeeplyNestedIdCompilingJustInTime () {
-    const schemaToNest = S.id('/test').int
-    const schema = S.id('/main').obj({ x: S.arr(schemaToNest) })
+    const schemaToNest = S.id('/testDeeplyN/test').int
+    const schema = S.id('/testDeeply/main').obj({ x: S.arr(schemaToNest) })
     schema.compile()
 
-    const schemaToNest2 = S.id('/test2').int
-    const schema2 = S.id('/main2').obj({
+    const schemaToNest2 = S.id('/testDeeply/test2').int
+    const schema2 = S.id('/testDeeply/main2').obj({
       x: S.arr(S.obj({
         y: S.arr(schemaToNest2)
       }))
     })
     const validate = schema2.compile()
     validate({ x: [{ y: [1] }] })
+  }
+
+  testNestedIdWithCopy () {
+    const schemaToNest = S.id('/testDeeply2/test').int
+    const schema = S
+      .obj({
+        x: schemaToNest,
+        y: schemaToNest
+      })
+    schema.copy().compile('x')
   }
 
   testRefSchema () {
@@ -1170,11 +1180,15 @@ class ValidatorNameTest extends BaseTest {
     this.checkValidatorName(S.int, 'custom name', 'custom name')
 
     // custom name overrides $id
-    this.checkValidatorName(S.id('/some/id').int, 'custom!', 'custom!')
+    this.checkValidatorName(
+      S.id('/testCustomNameForCompile/some/id').int,
+      'custom!', 'custom!')
   }
 
   test$IdAsNameForCompile () {
-    this.checkValidatorName(S.id('/an/id').int, '/some/id')
+    this.checkValidatorName(
+      S.id('/test$IdAsNameForCompile/an/id').int,
+      '/some/id')
   }
 }
 

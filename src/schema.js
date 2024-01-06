@@ -352,6 +352,7 @@ class BaseSchema {
    */
   copy () {
     const ret = new this.constructor()
+    ret.__nestedWith$Id = { ...this.__nestedWith$Id }
     ret.__properties = deepcopy(this.__properties)
     ret.__isOptional = this.__isOptional
     return ret
