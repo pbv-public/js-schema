@@ -196,11 +196,11 @@ class BaseSchema {
   }
 
   getDefault () {
-    return this.properties().default
+    return this.propertiesOrRef().default
   }
 
   hasDefault () {
-    return Object.prototype.hasOwnProperty.call(this.properties(), 'default')
+    return Object.prototype.hasOwnProperty.call(this.propertiesOrRef(), 'default')
   }
 
   /**
@@ -258,7 +258,15 @@ class BaseSchema {
     throw new Error('Subclass must override')
   }
 
-  properties () {
+  propertiesOrRef () {
+    const $id = this.getProp('$id')
+    if ($id) {
+      return { $ref: $id }
+    }
+    return this.propertiesIncludingId()
+  }
+
+  propertiesIncludingId () {
     return this.__properties
   }
 
@@ -267,7 +275,7 @@ class BaseSchema {
    */
   jsonSchema () {
     const exporter = new JSONSchemaExporter()
-    return exporter.export(this)
+    return exporter.export(this, true)
   }
 
   /**
@@ -401,7 +409,7 @@ class ObjectSchema extends BaseSchema {
     assert.ok(schema !== undefined, `Property ${name} must define a schema`)
 
     this.objectSchemas[name] = schema.lock()
-    properties[name] = schema.properties()
+    properties[name] = schema.propertiesOrRef()
     if (schema.required) {
       this.__setDefaultProp('required', []).push(name)
     }
@@ -431,7 +439,7 @@ class ObjectSchema extends BaseSchema {
         `Pattern ${name} already exists`)
       const anchoredName = getAnchoredPattern(name)
       this.patternSchemas[anchoredName] = schema.lock()
-      properties[anchoredName] = schema.properties()
+      properties[anchoredName] = schema.propertiesOrRef()
     }
     return this
   }
@@ -443,8 +451,8 @@ class ObjectSchema extends BaseSchema {
     return ret
   }
 
-  properties () {
-    const ret = super.properties()
+  propertiesIncludingId () {
+    const ret = super.propertiesIncludingId()
     // Allow any key if no key is defined.
     const hasProperty = Object.keys(this.objectSchemas).length > 0 ||
       Object.keys(this.patternSchemas).length > 0
@@ -500,7 +508,7 @@ class PolymorphicObjectSchema extends ObjectSchema {
       assert.ok(Object.getPrototypeOf(objSchema) === ObjectSchema.prototype,
         'polymorphic object sub-types must be S.obj')
       objSchema.lock()
-      const { type, ...relevantProperties } = objSchema.properties()
+      const { type, ...relevantProperties } = objSchema.propertiesOrRef()
       // additional properties constraint is enforced (or not) by the root
       // polymorphic object only (ignored on sub-types)
       delete relevantProperties.additionalProperties
@@ -518,8 +526,8 @@ class PolymorphicObjectSchema extends ObjectSchema {
     return ret
   }
 
-  properties () {
-    const ret = super.properties()
+  propertiesIncludingId () {
+    const ret = super.propertiesIncludingId()
     let cur = ret
     for (const typeName of this.__allowedTypeNames) {
       const extraProps = this.typeNameToExtraProps[typeName]
@@ -570,7 +578,7 @@ class ArraySchema extends BaseSchema {
   items (items) {
     assert.ok(!this.itemsSchema, 'Items is already set.')
     this.itemsSchema = items.lock()
-    this.__setProp('items', items.properties())
+    this.__setProp('items', items.propertiesOrRef())
     return this
   }
 

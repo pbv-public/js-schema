@@ -875,6 +875,26 @@ into **one** string`)
     })
   }
 
+  testNestedId () {
+    const schemaToNest = S.id('/test').int
+    const schema = S.id('/main').obj({ x: schemaToNest })
+    const jsonSchema = schema.jsonSchema()
+    delete jsonSchema.$schema
+    expect(jsonSchema).toEqual({
+      $id: '/main',
+      type: 'object',
+      additionalProperties: false,
+      required: ['x'],
+      properties: {
+        x: { $ref: '/test' }
+      }
+    })
+    schemaToNest.compile() // dependency must be compiled first
+    const validate = schema.compile()
+    expect(validate({ x: 3 }))
+    expect(() => validate({ x: '3' })).toThrow(S.ValidationError)
+  }
+
   testRefSchema () {
     const ref = S.ref('/some/id')
     const schema = S.obj({ x: ref })
