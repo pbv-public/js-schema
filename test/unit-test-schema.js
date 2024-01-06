@@ -954,7 +954,6 @@ into **one** string`)
     // can just pass values too
     const enumSchema2 = S.enum(3, 'x', false, null)
     for (const toTry of [enumSchema, enumSchema2]) {
-      console.log('in toTry*******')
       const validate = toTry.compile('enumSchema')
       validate(3)
       validate('x')
