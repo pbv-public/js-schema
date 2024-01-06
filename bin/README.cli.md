@@ -78,3 +78,7 @@ ValidationError: Validation Error: /types/confidence
   }
 }
 ```
+### Write all JSON schemas to a file
+Use `--build <outputFolder>` to write all JSON schemas to a folder. This can
+optionally be combined with --to-json-schema-flat to inline any internal `$ref`
+references.

@@ -20,6 +20,11 @@ cat file.json | $0 ${exampleSrcAndId} /someSchema$Id
 To output a JSON schema (the -flat suffix resolves $ref into their schema for
 $ref whose schemas are known):
 $0 ${exampleSrcAndId} --to-json-schema[-flat]`)
+  .option('--build', {
+    describe: 'output all JSON schemas to the specified folder',
+    type: 'string',
+    demandOption: false
+  })
   .option('--to-json-schema', {
     describe: 'output the specified JSON schema',
     type: 'boolean',
@@ -52,11 +57,23 @@ for (const schema of Object.values(allExports)) {
 }
 
 // if there was only a single argument to our script, then just print the list
-// of schemas
+// of schemas (or build them)
+const flat = argv.toJsonSchemaFlat === true
 if (argv._.length === 1) {
-  console.log('JSON Schema IDs:')
-  const sortedSchemaIds = Object.keys(idToSchema).sort()
-  console.log(sortedSchemaIds.map(x => '\t' + x).join('\n'))
+  if (argv.build) {
+    for (const [id, schema] of Object.entries(idToSchema)) {
+      const json = JSON.stringify(schema.jsonSchema(!flat), null, 2)
+      let ft = id.replace(/[/]/g, '_')
+      if (id[0] === '/') {
+        ft = ft.substring(1)
+      }
+      fs.writeFileSync(path.join(argv.build, ft + '.schema.json'), json)
+    }
+  } else {
+    console.log('JSON Schema IDs:')
+    const sortedSchemaIds = Object.keys(idToSchema).sort()
+    console.log(sortedSchemaIds.map(x => '\t' + x).join('\n'))
+  }
   process.exit(0)
 }
 
@@ -71,7 +88,6 @@ if (!selectedSchema) {
 
 if (argv.toJsonSchema || argv.toJsonSchemaFlat) {
   // output the JSON schema for the selected schema
-  const flat = argv.toJsonSchemaFlat === true
   console.log(JSON.stringify(selectedSchema.jsonSchema(!flat), null, 2))
 } else {
   // validate the input from stdin against the selected schema
