@@ -893,6 +893,9 @@ into **one** string`)
     const validate = schema.compile()
     expect(validate({ x: 3 }))
     expect(() => validate({ x: '3' })).toThrow(S.ValidationError)
+
+    // okay to try to re-compile
+    schema.compile()
   }
 
   testRefSchema () {

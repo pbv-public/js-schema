@@ -307,7 +307,9 @@ class BaseSchema {
     }
     this.lock()
     const jsonSchema = this.jsonSchema()
-    const validate = compiler.compile(jsonSchema)
+    const $id = this.getProp('$id')
+    const cachedValidate = $id ? compiler.getSchema($id) : null
+    const validate = cachedValidate ?? compiler.compile(jsonSchema)
     const assertValid = v => {
       if (!validate(v)) {
         throw new ValidationError(name, v, validate.errors, jsonSchema)
