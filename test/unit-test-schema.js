@@ -897,6 +897,21 @@ into **one** string`)
     schema.compile()
   }
 
+  testDeeplyNestedIdCompilingJustInTime () {
+    const schemaToNest = S.id('/test').int
+    const schema = S.id('/main').obj({ x: S.arr(schemaToNest) })
+    schema.compile()
+
+    const schemaToNest2 = S.id('/test2').int
+    const schema2 = S.id('/main2').obj({
+      x: S.arr(S.obj({
+        y: S.arr(schemaToNest2)
+      }))
+    })
+    const validate = schema2.compile()
+    validate({ x: [{ y: [1] }] })
+  }
+
   testRefSchema () {
     const ref = S.ref('/some/id')
     const schema = S.obj({ x: ref })

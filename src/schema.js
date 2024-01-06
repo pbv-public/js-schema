@@ -267,6 +267,10 @@ class BaseSchema {
       callerSchema.__nestedWith$Id[$id] = this
       return { $ref: $id }
     }
+    callerSchema.__nestedWith$Id = {
+      ...this.__nestedWith$Id,
+      ...callerSchema.__nestedWith$Id
+    }
     return this.propertiesIncludingId()
   }
 
