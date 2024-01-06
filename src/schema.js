@@ -964,9 +964,9 @@ class JSONSchemaExporter {
  */
 function formatParagraph (p, { replaceNewlines = ' ', trim = true } = {}) {
   if (!Array.isArray(p)) {
-    p = [p]
+    p = p.split('\n')
   }
-  if (trim && replaceNewlines !== false) {
+  if (trim) {
     p = p.map(x => x.trim())
   }
   let s = p.join('\n')
