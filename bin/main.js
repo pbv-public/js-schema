@@ -17,10 +17,16 @@ $0 ${exampleSchemaSrc}
 To validate a JSON file:
 cat file.json | $0 ${exampleSrcAndId} /someSchema$Id
 
-To output a JSON schema:
-$0 ${exampleSrcAndId} --to-json-schema`)
+To output a JSON schema (the -flat suffix resolves $ref into their schema for
+$ref whose schemas are known):
+$0 ${exampleSrcAndId} --to-json-schema[-flat]`)
   .option('--to-json-schema', {
-    describe: 'print out the specified JSON schema',
+    describe: 'output the specified JSON schema',
+    type: 'boolean',
+    demandOption: false
+  })
+  .option('--to-json-schema-flat', {
+    describe: 'output will replace $ref with the schemas (if known)',
     type: 'boolean',
     demandOption: false
   })
@@ -63,9 +69,10 @@ if (!selectedSchema) {
   process.exit(1)
 }
 
-if (argv.toJsonSchema) {
+if (argv.toJsonSchema || argv.toJsonSchemaFlat) {
   // output the JSON schema for the selected schema
-  console.log(JSON.stringify(selectedSchema.jsonSchema(), null, 2))
+  const flat = argv.toJsonSchemaFlat === true
+  console.log(JSON.stringify(selectedSchema.jsonSchema(!flat), null, 2))
 } else {
   // validate the input from stdin against the selected schema
   const validate = selectedSchema.compile(jsonSchemaId)

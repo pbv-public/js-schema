@@ -895,6 +895,19 @@ into **one** string`)
 
     // okay to try to re-compile
     schema.compile()
+
+    // flat version should replace $ref
+    const jsonSchemaFlat = schema.jsonSchema(false)
+    delete jsonSchemaFlat.$schema
+    expect(jsonSchemaFlat).toEqual({
+      $id: '/testNestedId/root',
+      type: 'object',
+      additionalProperties: false,
+      required: ['x'],
+      properties: {
+        x: { type: 'integer' }
+      }
+    })
   }
 
   testDeeplyNestedIdCompilingJustInTime () {
@@ -923,9 +936,10 @@ into **one** string`)
   }
 
   testRefSchema () {
-    const ref = S.ref('/some/id')
+    const ref = S.ref('/testRefSchema')
     const schema = S.obj({ x: ref })
-    expect(schema.jsonSchema().properties.x).toEqual({ $ref: '/some/id' })
+    const jsonSchema = schema.jsonSchema()
+    expect(jsonSchema.properties.x).toEqual({ $ref: '/testRefSchema' })
     let numCalls = 0
     ref.export({
       exportRef: x => {
@@ -934,6 +948,28 @@ into **one** string`)
       }
     })
     expect(numCalls).toBe(1)
+
+    // flat doesn't change here because $ref isn't defined (e.g., it is
+    // referring to something external)
+    const flatSchema = schema.jsonSchema(false)
+    expect(flatSchema).toEqual(jsonSchema)
+  }
+
+  testConvertingToFlatJsonSchemaWithKnownAndUnknownRefBothPresent () {
+    const externalRef = S.ref('/external/thing')
+    const internalThing = S.id('/internal/thing').int
+    const schema = S.obj({ x: externalRef, y: internalThing })
+
+    // by default, we auto-convert known schemas to $ref
+    const jsonSchema = schema.jsonSchema()
+    expect(jsonSchema.properties.x).toEqual({ $ref: '/external/thing' })
+    expect(jsonSchema.properties.y).toEqual({ $ref: '/internal/thing' })
+
+    // if we ask for the schema to be flat, then known refs are embedded
+    const flat = schema.jsonSchema(false)
+    expect(flat).not.toEqual(jsonSchema)
+    expect(flat.properties.x).toEqual(jsonSchema.properties.x)
+    expect(flat.properties.y).toEqual({ type: 'integer' })
   }
 
   testEnumSchema () {

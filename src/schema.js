@@ -2,6 +2,7 @@ import assert from 'assert' // only defined if needed
 
 import Ajv from 'ajv/dist/2020.js'
 import deepcopy from 'rfdc/default'
+import traverse from 'traverse'
 
 let ajv
 
@@ -281,9 +282,27 @@ class BaseSchema {
   /**
    * @return JSON Schema with the schema version keyword at the root level.
    */
-  jsonSchema () {
+  jsonSchema (autoConvertNestedSchemasToRefs = true) {
     const exporter = new JSONSchemaExporter()
-    return exporter.export(this, true)
+    const ret = exporter.export(this)
+    if (!autoConvertNestedSchemasToRefs) {
+      // if there are any nested schemas, replace the $ref with the schema
+      if (Object.keys(this.__nestedWith$Id).length) {
+        // walk the return and look for { $ref: xx }
+        const that = this
+        traverse(ret).forEach(function (x) {
+          const $ref = x?.$ref
+          if ($ref) {
+            const schema = that.__nestedWith$Id[$ref]
+            if (schema) {
+              const { $id, $schema, ...rest } = schema.jsonSchema(false)
+              this.update(rest)
+            }
+          }
+        })
+      }
+    }
+    return ret
   }
 
   /**

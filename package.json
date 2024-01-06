@@ -10,6 +10,7 @@
   "scripts": {
     "build-doc": "./docs/build.sh",
     "check-markdown-link": "./scripts/ci/markdown-link.sh",
+    "cli": "node ./bin/main.js",
     "debug": "./node_modules/nodemon/bin/nodemon.js --no-lazy --legacy-watch --watch ./src --watch ./example --watch ./test --inspect=9229 ./node_modules/jest/bin/jest.js --coverage --config=./jest.config.json --runInBand",
     "lint": "./scripts/ci/lint-format-js.sh",
     "setup": "yarn install --frozen-lockfile && pip install -r requirements.txt",
@@ -30,7 +31,8 @@
   },
   "dependencies": {
     "ajv": "^8.11.2",
-    "rfdc": "^1.1.4"
+    "rfdc": "^1.1.4",
+    "traverse": "^0.6.8"
   },
   "devDependencies": {
     "@babel/core": "^7.17.12",

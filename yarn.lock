@@ -5830,6 +5830,15 @@ touch@^3.1.0:
   resolved "https://registry.yarnpkg.com/touch/-/touch-3.1.1.tgz#097a23d7b161476435e5c1344a95c0f75b4a5694"
   integrity sha512-r0eojU4bI8MnHr8c5bNo7lJDdI2qXlWWJk6a9EAFG7vbhTjElYhBVS3/miuE0uOuoLdb8Mc/rVfsmm6eo5o9GA==
 
+traverse@^0.6.8:
+  version "0.6.11"
+  resolved "https://registry.yarnpkg.com/traverse/-/traverse-0.6.11.tgz#e8daa071b101ae66767fffa6f177aa6f7110068e"
+  integrity sha512-vxXDZg8/+p3gblxB6BhhG5yWVn1kGRlaL8O78UDXc3wRnPizB5g83dcvWV1jpDMIPnjZjOFuxlMmE82XJ4407w==
+  dependencies:
+    gopd "^1.2.0"
+    typedarray.prototype.slice "^1.0.5"
+    which-typed-array "^1.1.18"
+
 trough@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/trough/-/trough-1.0.5.tgz#b8b639cefad7d0bb2abd37d433ff8293efa5f406"
@@ -5928,6 +5937,20 @@ typed-array-length@^1.0.7:
     is-typed-array "^1.1.13"
     possible-typed-array-names "^1.0.0"
     reflect.getprototypeof "^1.0.6"
+
+typedarray.prototype.slice@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/typedarray.prototype.slice/-/typedarray.prototype.slice-1.0.5.tgz#a40f896968573b33cbb466a61622d3ee615a0728"
+  integrity sha512-q7QNVDGTdl702bVFiI5eY4l/HkgCM6at9KhcFbgUAzezHFbOVy4+0O/lCjsABEQwbZPravVfBIiBVGo89yzHFg==
+  dependencies:
+    call-bind "^1.0.8"
+    define-properties "^1.2.1"
+    es-abstract "^1.23.9"
+    es-errors "^1.3.0"
+    get-proto "^1.0.1"
+    math-intrinsics "^1.1.0"
+    typed-array-buffer "^1.0.3"
+    typed-array-byte-offset "^1.0.4"
 
 typedarray@^0.0.6:
   version "0.0.6"
@@ -6249,7 +6272,7 @@ which-collection@^1.0.2:
     is-weakmap "^2.0.2"
     is-weakset "^2.0.3"
 
-which-typed-array@^1.1.16, which-typed-array@^1.1.19:
+which-typed-array@^1.1.16, which-typed-array@^1.1.18, which-typed-array@^1.1.19:
   version "1.1.20"
   resolved "https://registry.yarnpkg.com/which-typed-array/-/which-typed-array-1.1.20.tgz#3fdb7adfafe0ea69157b1509f3a1cd892bd1d122"
   integrity sha512-LYfpUkmqwl0h9A2HL09Mms427Q1RZWuOHsukfVcKRq9q95iQxdw0ix1JQrqbcDR9PH1QDwf5Qo8OZb5lksZ8Xg==
