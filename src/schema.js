@@ -768,7 +768,6 @@ class EnumSchema extends BaseSchema {
   constructor (validValues) {
     super()
     const values = Array.isArray(validValues) ? validValues : [...arguments]
-    console.log('values=', values)
     assert(values.length >= 1, 'Enum must contain at least 1 value.')
     this.__setProp('enum', values)
   }
@@ -890,9 +889,7 @@ class JSONSchemaExporter {
     for (const method of methods) {
       Object.defineProperty(this, method, {
         get: () => {
-          return (schema) => {
-            return schema.properties()
-          }
+          return schema => schema.propertiesIncludingId()
         }
       })
     }
