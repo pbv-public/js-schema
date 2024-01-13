@@ -514,6 +514,11 @@ class NewFeatureTest extends BaseTest {
     expect(descFirstSchema.jsonSchema()).toEqual(descLastSchema.jsonSchema())
   }
 
+  testProxyFirstWithLock () {
+    const x = S.desc('test desc').title('test title').obj({}).lock()
+    expect(x.__isLocked).toBe(true)
+  }
+
   testWithTitleFirst () {
     function check (f) {
       const sampleTitle = 'some title'
