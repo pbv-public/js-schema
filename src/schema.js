@@ -262,7 +262,11 @@ class BaseSchema {
     const $id = this.getProp('$id')
     if ($id) {
       callerSchema.__nestedWith$Id[$id] = this
-      return { $ref: $id }
+      return {
+        $ref: $id,
+        description: this.getProp('description'),
+        title: this.getProp('title')
+      }
     }
     callerSchema.__nestedWith$Id = {
       ...this.__nestedWith$Id,
@@ -287,12 +291,13 @@ class BaseSchema {
         // walk the return and look for { $ref: xx }
         const that = this
         traverse(ret).forEach(function (x) {
-          const $ref = x?.$ref
+          // xRest has the custom title and description for the node, if any
+          const { $ref, ...xRest } = (x ?? {})
           if ($ref) {
             const schema = that.__nestedWith$Id[$ref]
             if (schema) {
               const { $id, $schema, ...rest } = schema.jsonSchema(false)
-              this.update(rest)
+              this.update({ ...rest, ...xRest })
             }
           }
         })
