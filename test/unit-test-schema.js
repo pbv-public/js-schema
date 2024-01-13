@@ -793,6 +793,31 @@ into **one** string`)
       .toBe('1. this will\n2. be\n3. three lines long')
   }
 
+  testRepeatedRefsToSame$IdWithDifferentDescriptions () {
+    const keyToDesc = {
+      x: 'some x',
+      y: 'some y'
+    }
+
+    const nested = S
+      .id('/test')
+      .int
+      .lock()
+
+    const actions = Object.fromEntries(
+      Object.entries(keyToDesc).map(([key, desc]) => [
+        key,
+        nested.copy().desc(desc)
+      ])
+    )
+    const actionModel = S
+      .obj(actions)
+
+    const s = actionModel.jsonSchema(false)
+    expect(s.properties.x.description).toBe('some x')
+    expect(s.properties.y.description).toBe('some y')
+  }
+
   testNewlinesInDescWithTrim () {
     const intWithDescription = S.int.desc(`
     1. this will
