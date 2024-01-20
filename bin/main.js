@@ -106,13 +106,18 @@ if (argv._.length === 1) {
         const flatObj = flat ? jsonObj : schema.jsonSchema(false)
         const prunedObj = pruneNonFunctionalElements(deepcopy(flatObj))
         const prunedJsonStr = stringify(prunedObj)
-        const md5 = crypto.createHash('md5').update(prunedJsonStr).digest('hex')
-        const jsonObjWithMD5 = deepcopy(jsonObj)
-        jsonObjWithMD5.properties.md5 = {
-          const: md5,
+        const functionalMD5 = crypto.createHash('md5').update(prunedJsonStr).digest('hex')
+        const fullMD5 = crypto.createHash('md5').update(stringify(flatObj)).digest('hex')
+        const jsonObjWithMD5s = deepcopy(jsonObj)
+        jsonObjWithMD5s.properties.md5_functional = {
+          const: functionalMD5,
           description: 'MD5 of the functional aspects of this schema'
         }
-        outputJsonObj = jsonObjWithMD5
+        jsonObjWithMD5s.properties.md5_full = {
+          const: fullMD5,
+          description: 'MD5 of the all aspects of this schema (including non-functional elements like documentation)'
+        }
+        outputJsonObj = jsonObjWithMD5s
       }
       const outputJsonStr = stringify(outputJsonObj, { space: 2 })
       let ft = id.replace(/[/]/g, '_')
