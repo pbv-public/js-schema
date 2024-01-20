@@ -1,6 +1,9 @@
+import crypto from 'crypto'
 import fs from 'fs'
 import path from 'path'
 
+import stringify from 'json-stable-stringify'
+import deepcopy from 'rfdc/default'
 import yargs from 'yargs/yargs'
 
 import S from '../src/schema.js'
@@ -35,6 +38,11 @@ $0 ${exampleSrcAndId} --to-json-schema[-flat]`)
     type: 'boolean',
     demandOption: false
   })
+  .option('--add-md5', {
+    describe: 'include an md5 property for every schema that is an object that is hash of the functional definition of the schema',
+    type: 'boolean',
+    demandOption: false
+  })
   .demandCommand(1, 2)
   .help(true)
   .strict()
@@ -56,18 +64,63 @@ for (const schema of Object.values(allExports)) {
   }
 }
 
+function pruneNonFunctionalElements (x) {
+  if (!x) {
+    return
+  }
+  for (const k of ['$id', 'title', 'description', 'examples']) {
+    delete x[k]
+  }
+  if (x.type === 'object' || x.properties) {
+    for (const valueSchema of Object.values(x.properties ?? {})) {
+      pruneNonFunctionalElements(valueSchema)
+    }
+    for (const valueSchema of Object.values(x?.patternProperties ?? {})) {
+      pruneNonFunctionalElements(valueSchema)
+    }
+    pruneNonFunctionalElementsFromIfThen(x)
+  } else if (x.type === 'array') {
+    pruneNonFunctionalElements(x.items)
+  }
+  return x
+}
+function pruneNonFunctionalElementsFromIfThen (x) {
+  if (!x) {
+    return
+  }
+  pruneNonFunctionalElements(x.if)
+  pruneNonFunctionalElements(x.then)
+  pruneNonFunctionalElementsFromIfThen(x.else)
+}
+
 // if there was only a single argument to our script, then just print the list
 // of schemas (or build them)
 const flat = argv.toJsonSchemaFlat === true
+const addMD5ToObjects = argv.addMd5 === true
 if (argv._.length === 1) {
   if (argv.build) {
     for (const [id, schema] of Object.entries(idToSchema)) {
-      const json = JSON.stringify(schema.jsonSchema(!flat), null, 2)
+      const jsonObj = schema.jsonSchema(!flat)
+      let outputJsonObj = jsonObj
+      if (addMD5ToObjects && jsonObj.type === 'object') {
+        const flatObj = flat ? jsonObj : schema.jsonSchema(false)
+        const prunedObj = pruneNonFunctionalElements(deepcopy(flatObj))
+        const prunedJsonStr = stringify(prunedObj)
+        const md5 = crypto.createHash('md5').update(prunedJsonStr).digest('hex')
+        const jsonObjWithMD5 = deepcopy(jsonObj)
+        jsonObjWithMD5.properties.md5 = {
+          const: md5,
+          description: 'MD5 of the functional aspects of this schema'
+        }
+        outputJsonObj = jsonObjWithMD5
+      }
+      const outputJsonStr = stringify(outputJsonObj, { space: 2 })
       let ft = id.replace(/[/]/g, '_')
       if (id[0] === '/') {
         ft = ft.substring(1)
       }
-      fs.writeFileSync(path.join(argv.build, ft + '.schema.json'), json)
+      const outputFilename = path.join(argv.build, ft + '.schema.json')
+      fs.writeFileSync(outputFilename, outputJsonStr)
     }
   } else {
     console.log('JSON Schema IDs:')
