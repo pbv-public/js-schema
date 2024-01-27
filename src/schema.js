@@ -1120,8 +1120,8 @@ export default class S {
     STR_ANDU: S.str.desc('Only hyphens, underscores, letters and numbers are permitted.')
       .pattern(/^[-_a-zA-Z0-9]+$/),
     // oversimplified, quick regex to check that a string looks like an email
-    STR_EMAIL: S.str.pattern(/^[^A-Z ]+@.+$/)
-      .desc('an e-mail address (lowercase only)').lock(),
+    STR_EMAIL: S.str.pattern(/^\S+@\S+$/)
+      .desc('an e-mail address (no whitespace)').lock(),
     TIMESTAMP: S.str
       .pattern(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d{3}Z/)
       .desc(`An UTC timestamp with millisecond precision, for example,
