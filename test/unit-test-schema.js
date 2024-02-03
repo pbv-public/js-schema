@@ -330,6 +330,16 @@ class ValidationTest extends BaseTest {
     // schema. In either case, validation should pass, not throw error
     S.str.default('123').compile('schema')
   }
+
+  testEmail () {
+    const validateEmail = S.SCHEMAS.STR_EMAIL.compile('email')
+    const validateLowerEmail = S.SCHEMAS.STR_EMAIL_LOWER.compile('lowerEmail')
+    validateEmail('x@y.com')
+    validateLowerEmail('x@y.com')
+    expect(() => validateLowerEmail('X@y.com')).toThrow(S.ValidationError)
+    validateEmail('x34jc82AFb+x1232@efesd.com')
+    expect(() => validateEmail('x y@y.com')).toThrow(S.ValidationError)
+  }
 }
 
 /**

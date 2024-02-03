@@ -1122,6 +1122,8 @@ export default class S {
     // oversimplified, quick regex to check that a string looks like an email
     STR_EMAIL: S.str.pattern(/^\S+@\S+$/)
       .desc('an e-mail address (no whitespace)').lock(),
+    STR_EMAIL_LOWER: S.str.pattern(/^[^\sA-Z]+@[^\sA-Z]+$/)
+      .desc('an e-mail address in lowercase (no whitespace)').lock(),
     TIMESTAMP: S.str
       .pattern(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d{3}Z/)
       .desc(`An UTC timestamp with millisecond precision, for example,
