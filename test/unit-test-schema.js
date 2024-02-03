@@ -577,6 +577,14 @@ class NewFeatureTest extends BaseTest {
     // non-empty allowed additional props if explicitly allowed
     nonEmptyObj.additionalProperties = true
     expect(nonEmptyObj.jsonSchema().additionalProperties).toBe(true)
+    nonEmptyObj.lock()
+    const validate = nonEmptyObj.compile('v1')
+    validate({ x: 'hi', y: 'ok' })
+
+    // copy should work exactly the same
+    const copy = nonEmptyObj.copy()
+    const copyValidate = copy.compile('copy')
+    copyValidate({ x: 'hi', y: 'ok' })
   }
 
   testRequiredByDefault () {

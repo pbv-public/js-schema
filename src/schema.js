@@ -488,6 +488,9 @@ class ObjectSchema extends BaseSchema {
     const ret = super.copy()
     Object.assign(ret.objectSchemas, this.objectSchemas)
     Object.assign(ret.patternSchemas, this.patternSchemas)
+    if (this.additionalProperties) {
+      ret.additionalProperties = this.additionalProperties
+    }
     return ret
   }
 
