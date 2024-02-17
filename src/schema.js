@@ -636,6 +636,7 @@ class UnionSchema extends BaseSchema {
     for (const schema of this.__schemas) {
       Object.assign(ret, schema.propertiesIncludingId())
     }
+    delete ret.$id // don't copy $id from sub schema
     const myProps = super.propertiesIncludingId()
     return { ...ret, ...myProps }
   }

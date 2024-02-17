@@ -1291,6 +1291,11 @@ class UnionSchemaTest extends BaseTest {
     expect(() => validate(bad)).toThrow(S.ValidationError)
   }
 
+  testIdInUnion () {
+    const schema = S.union(S.id('/in/schema').obj({ x: S.int }))
+    expect(schema.jsonSchema().$id).toBe(undefined)
+  }
+
   testCopyingUnionSchema () {
     const schema1 = S.union(S.obj({ x: S.int }))
     const schema2 = schema1.copy().addSchema(S.str)
