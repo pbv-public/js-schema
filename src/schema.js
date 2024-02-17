@@ -654,35 +654,6 @@ class NullableSchema extends UnionSchema {
     super(new NullSchema(), schema)
   }
 }
-/*
-class NullableSchema extends BaseSchema {
-  constructor (schema) {
-    super()
-    assert.ok(schema instanceof BaseSchema,
-      'NullableSchema only works with schema objects')
-    this.__setProp('type', ['null', schema.getProp('type')])
-    this.schema = schema
-  }
-
-  export (visitor) {
-    return visitor.exportMulti(this)
-  }
-
-  copy () {
-    const ret = super.copy()
-    ret.__schemas = deepcopy(this.__schemas)
-    return ret
-  }
-
-  propertiesIncludingId () {
-    const schemaProps = this.schema.propertiesIncludingId()
-    return {
-      schemaProps,
-      type: ['null', schemaProps.type]
-    }
-  }
-}
-*/
 
 /**
  * The ArraySchema class.
