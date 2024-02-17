@@ -1268,6 +1268,52 @@ class PolymorphicObjectTest extends BaseTest {
   }
 }
 
+class UnionSchemaTest extends BaseTest {
+  testNullableSchema () {
+    const schema = S.nullable(S.obj({ x: S.int }))
+    const jsonSchema = schema.jsonSchema()
+    delete jsonSchema.$schema
+    expect(jsonSchema).toEqual({
+      type: ['null', 'object'],
+      properties: {
+        x: { type: 'integer' }
+      },
+      additionalProperties: false,
+      required: ['x']
+    })
+
+    // check validating
+    const validate = schema.compile('testNullableSchema')
+    const someObj = { x: 1 }
+    expect(validate(someObj))
+    expect(validate(null))
+    const bad = { x: 'a' } // nope, needs to be an int here
+    expect(() => validate(bad)).toThrow(S.ValidationError)
+  }
+
+  testCopyingUnionSchema () {
+    const schema1 = S.union(S.obj({ x: S.int }))
+    const schema2 = schema1.copy().addSchema(S.str)
+    const validate1 = schema1.compile('testCopyingUnionSchema1')
+    const validate2 = schema2.compile('testCopyingUnionSchema2')
+
+    validate1({ x: -1 })
+    validate2({ x: -1 })
+    expect(() => validate1('cool')).toThrow(S.ValidationError)
+    validate2('cool')
+  }
+
+  testNullSchema () {
+    const schema = S.null
+    const validate = schema.compile('testNullSchema')
+    validate(null)
+    expect(() => validate()).toThrow(S.ValidationError)
+    expect(() => validate(undefined)).toThrow(S.ValidationError)
+    expect(() => validate(0)).toThrow(S.ValidationError)
+    expect(() => validate(false)).toThrow(S.ValidationError)
+  }
+}
+
 class ValidatorNameTest extends BaseTest {
   checkValidatorName (schema, expectedName, compileWithCustomName) {
     const validate = schema.compile(compileWithCustomName)
@@ -1295,4 +1341,4 @@ class ValidatorNameTest extends BaseTest {
 }
 
 runTests(FeatureParityTest, TypedNumberTest, ValidationTest, NewFeatureTest,
-  PolymorphicObjectTest, ValidatorNameTest)
+  PolymorphicObjectTest, UnionSchemaTest, ValidatorNameTest)

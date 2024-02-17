@@ -395,6 +395,7 @@ class BaseSchema {
    */
   min (val) {
     const name = this.constructor.MIN_PROP_NAME
+    assert.ok(name, 'MIN_PROP_NAME not defined')
     this.__validateRangeProperty(name, val)
     const max = this.getProp(this.constructor.MAX_PROP_NAME)
     assert.ok(max === undefined || max >= val, 'min must be less than max')
@@ -407,6 +408,7 @@ class BaseSchema {
    */
   max (val) {
     const name = this.constructor.MAX_PROP_NAME
+    assert.ok(name, 'MAX_PROP_NAME not defined')
     this.__validateRangeProperty(name, val)
     const min = this.getProp(this.constructor.MIN_PROP_NAME)
     assert.ok(min === undefined || min <= val, 'max must be more than min')
@@ -592,6 +594,95 @@ class PolymorphicObjectSchema extends ObjectSchema {
     return ret
   }
 }
+
+/**
+ * A schema which is a union of two or more other schemas.
+ */
+class UnionSchema extends BaseSchema {
+  constructor (...schemas) {
+    super()
+    this.__setProp('type', [])
+    this.__schemas = []
+    for (const schema of schemas) {
+      this.addSchema(schema)
+    }
+  }
+
+  addSchema (schema) {
+    assert.ok(!this.__isLocked,
+      'Schema is locked. Call copy then further modify the schema')
+    assert.ok(schema instanceof BaseSchema,
+      'UnionSchema only works with schema objects')
+    schema.lock()
+    this.__schemas.push(schema)
+    schema.propertiesOrRef(this) // update __nestedWith$Id
+    assert.ok(schema.constructor.JSON_SCHEMA_TYPE, 'must provide a concrete type')
+    this.getProp('type').push(schema.constructor.JSON_SCHEMA_TYPE)
+    return this
+  }
+
+  export (visitor) {
+    return visitor.exportUnion(this)
+  }
+
+  copy () {
+    const ret = super.copy()
+    ret.__schemas = this.__schemas.map(x => x.copy())
+    return ret
+  }
+
+  propertiesIncludingId () {
+    const ret = {}
+    for (const schema of this.__schemas) {
+      Object.assign(ret, schema.propertiesIncludingId())
+    }
+    const myProps = super.propertiesIncludingId()
+    return { ...ret, ...myProps }
+  }
+}
+
+class NullSchema extends BaseSchema {
+  static JSON_SCHEMA_TYPE = 'null'
+
+  export (visitor) {
+    return visitor.exportNull(this)
+  }
+}
+
+class NullableSchema extends UnionSchema {
+  constructor (schema) {
+    super(new NullSchema(), schema)
+  }
+}
+/*
+class NullableSchema extends BaseSchema {
+  constructor (schema) {
+    super()
+    assert.ok(schema instanceof BaseSchema,
+      'NullableSchema only works with schema objects')
+    this.__setProp('type', ['null', schema.getProp('type')])
+    this.schema = schema
+  }
+
+  export (visitor) {
+    return visitor.exportMulti(this)
+  }
+
+  copy () {
+    const ret = super.copy()
+    ret.__schemas = deepcopy(this.__schemas)
+    return ret
+  }
+
+  propertiesIncludingId () {
+    const schemaProps = this.schema.propertiesIncludingId()
+    return {
+      schemaProps,
+      type: ['null', schemaProps.type]
+    }
+  }
+}
+*/
 
 /**
  * The ArraySchema class.
@@ -934,7 +1025,9 @@ class JSONSchemaExporter {
       'exportEnum',
       'exportMap',
       'exportMedia',
-      'exportRef'
+      'exportNull',
+      'exportRef',
+      'exportUnion'
     ]
 
     for (const method of methods) {
@@ -1090,6 +1183,22 @@ export default class S {
    * Get a new MediaSchema object.
    */
   static get media () { return new MediaSchema() }
+
+  /**
+   * Gets the schema for null (a constant).
+   */
+  static get null () { return new NullSchema() }
+
+  /**
+   * Gets a schema which is a union of two or more schemas.
+   */
+  static union (...schemas) { return new UnionSchema(...schemas) }
+
+  /**
+   * Returns a schema which is either null or the specified schema.
+   */
+  static nullable (schema) { return new NullableSchema(schema) }
+
   /**
    * Lock all schemas in a dictionary (in-place).
    * @param {Object<Schema>} schemas a map of schema values

@@ -61,7 +61,10 @@ S.bool                 // replace S.boolean()
 S.ref                  // replace S.ref()
 S.enum([1, 'x'])       // replace S.enum; for non-string and heterogenous enums
 S.const(5)             // replace S.const
-
+S.null                 // the schema for null (a constant)
+S.nullable(someSchema) // must match someSchema or be null
+S.union(s1, s2, ...)   // must match at least one of the specified schemas of
+                       // *different* types
 
 // Common API for all schema objects
 S.str // Or any other schema object
