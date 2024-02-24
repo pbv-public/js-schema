@@ -601,8 +601,7 @@ class PolymorphicObjectSchema extends ObjectSchema {
 class UnionSchema extends BaseSchema {
   constructor (...schemas) {
     super()
-    this.__setProp('type', [])
-    this.__schemas = []
+    this.__setProp('anyOf', [])
     for (const schema of schemas) {
       this.addSchema(schema)
     }
@@ -614,31 +613,12 @@ class UnionSchema extends BaseSchema {
     assert.ok(schema instanceof BaseSchema,
       'UnionSchema only works with schema objects')
     schema.lock()
-    this.__schemas.push(schema)
-    schema.propertiesOrRef(this) // update __nestedWith$Id
-    assert.ok(schema.constructor.JSON_SCHEMA_TYPE, 'must provide a concrete type')
-    this.getProp('type').push(schema.constructor.JSON_SCHEMA_TYPE)
+    this.getProp('anyOf').push(schema.propertiesOrRef(this))
     return this
   }
 
   export (visitor) {
     return visitor.exportUnion(this)
-  }
-
-  copy () {
-    const ret = super.copy()
-    ret.__schemas = this.__schemas.map(x => x.copy())
-    return ret
-  }
-
-  propertiesIncludingId () {
-    const ret = {}
-    for (const schema of this.__schemas) {
-      Object.assign(ret, schema.propertiesIncludingId())
-    }
-    delete ret.$id // don't copy $id from sub schema
-    const myProps = super.propertiesIncludingId()
-    return { ...ret, ...myProps }
   }
 }
 

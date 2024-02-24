@@ -1274,12 +1274,17 @@ class UnionSchemaTest extends BaseTest {
     const jsonSchema = schema.jsonSchema()
     delete jsonSchema.$schema
     expect(jsonSchema).toEqual({
-      type: ['null', 'object'],
-      properties: {
-        x: { type: 'integer' }
-      },
-      additionalProperties: false,
-      required: ['x']
+      anyOf: [
+        { type: 'null' },
+        {
+          type: 'object',
+          properties: {
+            x: { type: 'integer' }
+          },
+          additionalProperties: false,
+          required: ['x']
+        }
+      ]
     })
 
     // check validating
@@ -1316,6 +1321,20 @@ class UnionSchemaTest extends BaseTest {
     expect(() => validate(undefined)).toThrow(S.ValidationError)
     expect(() => validate(0)).toThrow(S.ValidationError)
     expect(() => validate(false)).toThrow(S.ValidationError)
+  }
+
+  testUnionWithThreeTypes () {
+    const schema = S.union(
+      S.obj({ x: S.int }),
+      S.obj({ y: S.str.min(2), z: S.int.optional() }),
+      S.bool
+    )
+    const validate = schema.compile('testUnionWithThreeTypes')
+    validate({ x: 1 })
+    validate({ y: 'hi' })
+    validate({ y: 'hi', z: 3 })
+    validate(true)
+    validate(false)
   }
 }
 
