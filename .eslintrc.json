@@ -20,6 +20,7 @@
     },
     "parser": "@babel/eslint-parser",
     "rules": {
+        "import/extensions": ["error", "ignorePackages"],
         "import/order": [
             "error",
             {
