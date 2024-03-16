@@ -150,7 +150,7 @@ if (argv.toJsonSchema || argv.toJsonSchemaFlat) {
 } else {
   // validate the input from stdin against the selected schema
   const validate = selectedSchema.compile(jsonSchemaId)
-  const data = fs.readFileSync(0, 'utf-8')
+  const data = fs.readFileSync('/dev/stdin', 'utf-8')
   const json = JSON.parse(data)
   try {
     validate(json)
