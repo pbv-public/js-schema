@@ -144,13 +144,21 @@ if (!selectedSchema) {
   process.exit(1)
 }
 
+async function readAllFromStream (stream) {
+  const chunks = []
+  for await (const chunk of stream) {
+    chunks.push(chunk)
+  }
+  return Buffer.concat(chunks).toString('utf8')
+}
+
 if (argv.toJsonSchema || argv.toJsonSchemaFlat) {
   // output the JSON schema for the selected schema
   console.log(JSON.stringify(selectedSchema.jsonSchema(!flat), null, 2))
 } else {
   // validate the input from stdin against the selected schema
   const validate = selectedSchema.compile(jsonSchemaId)
-  const data = fs.readFileSync('/dev/stdin', 'utf-8')
+  const data = await readAllFromStream(process.stdin)
   const json = JSON.parse(data)
   try {
     validate(json)
