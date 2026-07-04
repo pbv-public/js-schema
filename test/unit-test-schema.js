@@ -336,9 +336,20 @@ class ValidationTest extends BaseTest {
     const validateLowerEmail = S.SCHEMAS.STR_EMAIL_LOWER.compile('lowerEmail')
     validateEmail('x@y.com')
     validateLowerEmail('x@y.com')
-    expect(() => validateLowerEmail('X@y.com')).toThrow(S.ValidationError)
-    validateEmail('x34jc82AFb+x1232@efesd.com')
-    expect(() => validateEmail('x y@y.com')).toThrow(S.ValidationError)
+    validateEmail('a@b.c.com') // subdomains are fine
+    validateEmail('x34jc82AFb+x1232@efesd.com') // plus-addressing + uppercase ok for STR_EMAIL
+    expect(() => validateLowerEmail('X@y.com')).toThrow(S.ValidationError) // uppercase
+    expect(() => validateEmail('x y@y.com')).toThrow(S.ValidationError) // whitespace
+    // require a dot-bearing domain (a TLD): reject no-TLD addresses
+    expect(() => validateEmail('foo@bar')).toThrow(S.ValidationError)
+    expect(() => validateEmail('foo@gmailcom')).toThrow(S.ValidationError)
+    expect(() => validateLowerEmail('foo@bar')).toThrow(S.ValidationError)
+    // forbid multiple @
+    expect(() => validateEmail('foo@@bar.com')).toThrow(S.ValidationError)
+    expect(() => validateEmail('a@b@c.com')).toThrow(S.ValidationError)
+    // reject empty label / trailing dot
+    expect(() => validateEmail('foo@.com')).toThrow(S.ValidationError)
+    expect(() => validateEmail('foo@bar.')).toThrow(S.ValidationError)
   }
 }
 

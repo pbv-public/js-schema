@@ -1183,11 +1183,12 @@ export default class S {
       .pattern(S.PATTERN.UUID_PATTERN),
     STR_ANDU: S.str.desc('Only hyphens, underscores, letters and numbers are permitted.')
       .pattern(/^[-_a-zA-Z0-9]+$/),
-    // oversimplified, quick regex to check that a string looks like an email
-    STR_EMAIL: S.str.pattern(/^\S+@\S+$/)
-      .desc('an e-mail address (no whitespace)').lock(),
-    STR_EMAIL_LOWER: S.str.pattern(/^[^\sA-Z]+@[^\sA-Z]+$/)
-      .desc('an e-mail address in lowercase (no whitespace)').lock(),
+    // requires a single @, no whitespace, and a dot-bearing domain (a TLD);
+    // rejects no-TLD (foo@bar) and double-@ (a@@b.com) addresses
+    STR_EMAIL: S.str.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+      .desc('an e-mail address (single @, no whitespace, dot-bearing domain)').lock(),
+    STR_EMAIL_LOWER: S.str.pattern(/^[^\s@A-Z]+@[^\s@A-Z]+\.[^\s@A-Z]+$/)
+      .desc('a lowercase e-mail address (single @, no whitespace, dot-bearing domain)').lock(),
     TIMESTAMP: S.str
       .pattern(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d{3}Z/)
       .desc(`An UTC timestamp with millisecond precision, for example,
